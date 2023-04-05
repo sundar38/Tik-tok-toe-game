@@ -2,11 +2,14 @@ import logo from './logo.svg';
 import './App.css';
 import Icons from './Components/Icons';
 import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+  import 'react-toastify/dist/ReactToastify.css';
 import './styles.css';
+
 let tiktoktoearray= new Array(9).fill("");
 function App() {
  
-  let [isCross, setIsCross]=useState("true");
+  let [isCross, setIsCross]=useState(true);
   let [winner, setWinner]=useState("");
 
   //play again- reload the game
@@ -49,6 +52,9 @@ function App() {
     if(tiktoktoearray[0]==tiktoktoearray[4] && tiktoktoearray[4]==tiktoktoearray[8] && tiktoktoearray[0]!=""){
       setWinner(`${tiktoktoearray[0]} has won`);
     }
+    else if(tiktoktoearray.indexOf("")==-1){ //all indexes are filled so indexof empty cell is -1
+      setWinner("Game draw");
+    }
     
   }
 
@@ -56,19 +62,33 @@ function App() {
   //change item
 
   function changeitem(index){
+      if(winner !=""){          //if user try to click after winning the game 
+        return toast("Game has already got over")
+      }  
+
       if(tiktoktoearray[index]!=""){
-        console.log("already filled");
+        <h1>`${index}`</h1>
+        console.log(tiktoktoearray[index]);
+        return toast("already filled");
       }
-      else{
-      tiktoktoearray[index]= isCross=true?"Cross":"Circle";
-      setIsCross(!isCross);
+      else if(tiktoktoearray[index]==""){        
+        tiktoktoearray[index]= isCross==true?"Cross":"Circle";
+      // if(isCross==true)
+      //   setIsCross("false");
+      // else
+      //   setIsCross("true");
+        console.log(isCross);
+        setIsCross(!isCross);
+        console.log(isCross);
+        findwinner();
       }
-  }
+    }
   return (
     <div>
+      <ToastContainer  position="bottom-center"/>
       {
         winner==""?(
-          <div> Hey {isCross=="true"?"Cross":"Circle"} your turn</div>
+          <div> Hey {isCross==true?"Cross":"Circle"} your turn</div>
         ): (
           <div>
           <h1>{winner}</h1>
@@ -77,8 +97,8 @@ function App() {
         )
       }
       <div className='grid'>{
-            tiktoktoearray.map((index, value)=>(
-              <div className='element' onClick={()=> changeitem(index)}>
+            tiktoktoearray.map((value, index)=>(              
+              <div className='element'  onClick={()=> changeitem(index)}>
                 <Icons usericon={value}/>
               </div>
             ))
